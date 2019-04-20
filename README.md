@@ -1,4 +1,4 @@
-#Spotify Tracker
+# Spotify Tracker
 
 To run the MongoDB server locally, run command:
 ```

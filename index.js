@@ -1,21 +1,14 @@
+
 const express = require( 'express' );
+const bodyParser = require( 'body-parser' );
+const helmet = require( 'helmet' );
+const morgan = require( 'morgan' );
+
 const app = express();
 const PORT = 3000;
 
-app.use( ( request, response, next ) => {
-    console.log( request.headers );
-    next();
-} );
-  
-app.use( ( request, response, next ) => {
-    request.chance = Math.random();
-    next();
-} );
-
-app.get( '/', ( request, response ) => {
-    response.json({
-        chance: request.chance
-    });
-} )
+app.use( helmet( ) );
+app.use( bodyParser.json() );
+app.use( morgan( `:method :url :status :res[content-length] - :response-time ms`) );
 
 app.listen( PORT );

@@ -5,7 +5,7 @@ const morgan = require( 'morgan' );
 const cors = require( 'cors' );
 
 const Database = require( './libraries/mongo' );
-const { dbTestEndpoint } = require( './app/index');
+const { dbTestEndpoint } = require( './api/endpoints');
 
 const app = express();
 const PORT = 3000;

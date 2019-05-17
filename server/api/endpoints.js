@@ -3,7 +3,7 @@ const Database = require( '../libraries/mongo' );
 const dbTestEndpoint = async ( req, res ) => {
     console.log( req.body )
     const { param } = req.body;
-    const { success, error } = dbTest( param );
+    const { success, error } = await dbTest( param );
     res.json( {
         success,
         error

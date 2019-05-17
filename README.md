@@ -2,7 +2,7 @@
 
 To run the MongoDB server locally, run command:
 ```
-mongod --dbpath D:\data\db
+mongod --dbpath DB_STRING_HERE
 ```
 
 To connect via the shell:

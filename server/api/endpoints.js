@@ -10,6 +10,10 @@ const dbTestEndpoint = async ( req, res ) => {
     } )
 };
 
+const search = async ( req, res ) => {
+    const { query } = req;
+}
+
 const dbTest = async ( param ) => {
     try {
         await Database.getDB().collection( 'dbTest' ).insertOne({ param });
@@ -21,5 +25,6 @@ const dbTest = async ( param ) => {
 }
 
 module.exports = {
-    dbTestEndpoint
+    dbTestEndpoint,
+    search
 }

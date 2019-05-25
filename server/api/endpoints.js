@@ -1,30 +1,53 @@
 const Database = require( '../libraries/mongo' );
+const Spotify = require( '../libraries/spotify' );
 
-const dbTestEndpoint = async ( req, res ) => {
-    console.log( req.body )
-    const { param } = req.body;
-    const { success, error } = await dbTest( param );
-    res.json( {
-        success,
-        error
-    } )
-};
+const {
+    searchArtists,
+    addArtist,
+} = require( './methods' );
 
-const search = async ( req, res ) => {
-    const { query } = req;
+const SearchArtists = async ( req, res ) => {
+    const { search } = req.query;
+    const { error, artists } = await searchArtists( search );
+    res.json({
+        error,
+        artists
+    })
 }
 
-const dbTest = async ( param ) => {
+const AddArtist = async ( req, res ) => {
+    const { artistId } = req.query;
+
+
+    const result = await Spotify.hitAPI( { location: `artists/${artistId}` } );
+    
+    if ( result.error ) {
+        res.json( result );
+        return
+    }
+
     try {
-        await Database.getDB().collection( 'dbTest' ).insertOne({ param });
-        return { success: "Success!" }
+        const cleanedArtist = {
+            _id: result.id,
+            name: result.name,
+            image: result.images.length ? result.images[0].url : null,
+        };
+
+        await Database.getDB().collection( 'artists' ).updateOne(
+            { _id: artistId },
+            { $set: cleanedArtist },
+            { upsert: true }
+        )
+
+        res.json( cleanedArtist );
     } catch ( error ) {
-        return { error: "Something went wrong" };
+        console.log( error );
+        res.json( { error } );
     }
     
 }
 
 module.exports = {
-    dbTestEndpoint,
-    search
+    SearchArtists,
+    AddArtist
 }

@@ -6,7 +6,7 @@ const cors = require( 'cors' );
 
 const Database = require( './libraries/mongo' );
 const Spotify = require( './libraries/spotify' );
-const { dbTestEndpoint, search } = require( './api/endpoints');
+const { SearchArtists, AddArtist } = require( './api/endpoints');
 
 const app = express();
 const PORT = 3000;
@@ -19,8 +19,8 @@ app.use( cors() );
 app.use( morgan( `:method :url :status :res[content-length] - :response-time ms`) );
 
 //Endpoints
-app.post('/db-test', dbTestEndpoint );
-app.post('/search', search );
+app.post('/searchArtists', SearchArtists );
+app.post('/addArtist', AddArtist );
 
 //Server init
 ( async function init () {
@@ -35,6 +35,6 @@ app.post('/search', search );
 
 app.on( 'ready', function() {
     app.listen( process.env.PORT || PORT, () => {
-        console.log( "Main server started" );
+        console.log( "Main server started on port " + (process.env.PORT || PORT) );
     } );
 } );

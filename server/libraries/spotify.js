@@ -29,12 +29,13 @@ class Spotify {
             const result = await res.json();
             this.EXPIRES_AT = Date.now() + result.expires_in * 1000;
             this.AUTH_TOKEN = result.access_token;
+            console.log(this.EXPIRES_AT, this.AUTH_TOKEN);
         } catch ( error ) {
             console.log(error);
         }
     }
 
-    async hitAPI( location, method = "GET" ) {
+    async hitAPI( { location, method = "GET" } ) {
         await this.authenticate();
         const uri = `https://api.spotify.com/v1/${location}`;
         try {
@@ -42,7 +43,7 @@ class Spotify {
                 method,
                 headers: {
                     'Content-Type' : 'application/x-www-form-urlencoded',
-                    'Authorization': this.AUTH_TOKEN
+                    'Authorization': `Bearer ${this.AUTH_TOKEN}`
                 }
             })
             const result = await res.json();

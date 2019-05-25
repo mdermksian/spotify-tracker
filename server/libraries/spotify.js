@@ -35,9 +35,9 @@ class Spotify {
         }
     }
 
-    async hitAPI( { location, method = "GET" } ) {
+    async hitAPI( { location, method = "GET", overrideLocation = false } ) {
         await this.authenticate();
-        const uri = `https://api.spotify.com/v1/${location}`;
+        const uri = overrideLocation ? location : `https://api.spotify.com/v1/${location}`;
         try {
             const res = await fetch( uri, {
                 method,

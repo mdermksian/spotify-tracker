@@ -84,6 +84,7 @@ const addArtist = async ( artistId ) => {
                 "filter": { _id: album.id },
                 "update": { $set: {
                     _id: album.id,
+                    artistId,
                     name: album.name,
                     type: album.album_type,
                     image: album.images.length ? album.images[0].url : null,

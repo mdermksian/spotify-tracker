@@ -35,6 +35,10 @@ class Database {
     getDB() {
         return this.client.db();
     }
+
+    getClient() {
+        return this.client;
+    }
 }
 
 module.exports = new Database();

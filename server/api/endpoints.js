@@ -2,6 +2,7 @@ const {
     searchArtists,
     addArtist,
 } = require( './methods' );
+const ComputeAlbumDiffs = require( '../libraries/diffs' );
 
 const SearchArtists = async ( req, res ) => {
     const { search } = req.query;
@@ -22,7 +23,13 @@ const AddArtist = async ( req, res ) => {
     } )
 }
 
+const TestRunDiff = async ( req, res ) => {
+    await ComputeAlbumDiffs();
+    res.json ( "Success" );
+}
+
 module.exports = {
     SearchArtists,
-    AddArtist
+    AddArtist,
+    TestRunDiff
 }

@@ -13,6 +13,10 @@ class Spotify {
         this.SECRET_KEY = process.env.SPOTIFY_SECRET_KEY;
     }
 
+    sleep( t ) {
+        return new Promise( (resolve) => setTimeout( resolve, t ) );
+    } 
+
     async authenticate() {
         if ( this.AUTH_TOKEN && this.EXPIRES_AT && this.EXPIRES_AT > Date.now() ) return;
         if ( !this.CLIENT_ID || !this.SECRET_KEY ) return;

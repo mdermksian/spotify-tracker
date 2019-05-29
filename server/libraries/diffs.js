@@ -1,11 +1,11 @@
 const Database = require( './mongo.js' );
 const Spotify = require( './spotify' );
-const { failure } = require ( './errors' );
 
 const ComputeAlbumDiffs = async ( ) => {
-    const artistIds = await Database.getDB().collection( 'artists' ).aggregate([ { $project: { _id: 1 } } ]).toArray();
+    const artistIdObjects = await Database.getDB().collection( 'artists' ).aggregate([ { $project: { _id: 1 } } ]).toArray();
 
-    for ( const artistId of artistIds ) {
+    for ( const artistIdObject of artistIdObjects ) {
+        const artistId = artistIdObject._id;
         const artist = await Database.getDB().collection( 'artists' ).findOne( {_id: artistId }, { albums: 1 } );
         const currentRecordOfAlbums = artist.albums;
 
@@ -14,6 +14,7 @@ const ComputeAlbumDiffs = async ( ) => {
         const spotifyRecordOfAlbums = [];
         while ( !finishedGettingAlbums ) {
             const albumResult = await Spotify.hitAPI({ location: spotifyLocation, overrideLocation: true });
+            if( albumResult.error ) console.error(albumResult.error);
             Array.prototype.push.apply( spotifyRecordOfAlbums, albumResult.items );
             if ( albumResult.next ) {
                 location = albumResult.next;
@@ -21,6 +22,7 @@ const ComputeAlbumDiffs = async ( ) => {
                 finishedGettingAlbums = true;
             }
         }
+        if( spotifyRecordOfAlbums.length < 1 ) continue;
 
         const albumDiff = [];
         const albumDBWrites = [];
@@ -45,7 +47,10 @@ const ComputeAlbumDiffs = async ( ) => {
             })
         }
 
-        if ( albumDiff.length < 1 ) continue;
+        if ( albumDiff.length < 1 ) {
+            console.error( `No new albums found for artist ${artistId}`);
+            continue;
+        }
 
         const session = await Database.getClient().startSession();
         session.startTransaction();
@@ -76,3 +81,5 @@ const ComputeAlbumDiffs = async ( ) => {
     }
 
 }
+
+module.exports = ComputeAlbumDiffs;

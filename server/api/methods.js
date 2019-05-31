@@ -16,7 +16,7 @@ const searchArtists = async ( search ) => {
         return failure( API_ERRORS.SEARCH_ERRORS.BAD_INPUT );
     }
 
-    const result = await Spotify.hitAPI( { location: `search?q=${search}&type=artist&limit=5` } );
+    const result = await Spotify.hitAPI( { location: `search?q=${search}&type=artist&limit=10` } );
 
     if ( result.error ) {
         console.error( "Spotify Error: ", result.error );

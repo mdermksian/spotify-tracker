@@ -74,6 +74,7 @@ const ComputeAlbumDiffs = async ( ) => {
             await session.commitTransaction();
             session.endSession();
         } catch ( error ) {
+            console.error(error);
             await session.abortTransaction();
             session.endSession();
         }

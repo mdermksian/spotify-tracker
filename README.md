@@ -1,13 +1,2 @@
 # Spotify Tracker
-
-To run the MongoDB server locally, run command:
-```
-mongod --dbpath DB_STRING_HERE
-```
-
-To connect via the shell:
-```
-mongo
-```
-Although compass or robo are more useful...
-
+Tool for tracking your favorite artists' new albums and singles on spotify!

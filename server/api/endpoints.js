@@ -1,7 +1,11 @@
 const {
     searchArtists,
     addArtist,
-} = require( './methods' );
+} = require( './spotify-methods' );
+const {
+    signUp
+} = require( './user-methods' );
+
 const ComputeAlbumDiffs = require( '../libraries/diffs' );
 
 const SearchArtists = async ( req, res ) => {
@@ -14,13 +18,9 @@ const SearchArtists = async ( req, res ) => {
 }
 
 const AddArtist = async ( req, res ) => {
-    const { artistId } = req.query;
-    const { error, artist, albums } = await addArtist( artistId );
-    res.json( {
-        error,
-        artist,
-        albums
-    } )
+    const { artistId, userId } = req.body;
+    const result = await addArtist( artistId, userId );
+    res.json( result )
 }
 
 const TestRunDiff = async ( req, res ) => {
@@ -28,8 +28,18 @@ const TestRunDiff = async ( req, res ) => {
     res.json ( "Success" );
 }
 
+const SignUp = async ( req, res ) => {
+    const { email, password } = req.body;
+    const { user, error } = await signUp( { email, password } );
+    res.json( {
+        error,
+        user,
+    } )
+}
+
 module.exports = {
     SearchArtists,
     AddArtist,
-    TestRunDiff
+    TestRunDiff,
+    SignUp
 }

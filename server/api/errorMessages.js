@@ -31,6 +31,21 @@ const API_ERRORS = {
             errorCode: 1013,
         }
     },
+    SIGN_UP_ERRORS: {
+        BAD_INPUT: {
+            errorMessage: "Bad input",
+            errorCode: 1020,
+        },
+        USER_ALREADY_EXIST: {
+            errorMessage: "A user with this email address already exists",
+            errorCode: 1021
+        },
+        COULDNT_CREATE_USER: {
+            errorMessage: "Sorry, the user could not be created",
+            errorCode: 1022,
+        },
+
+    }
 }
 
 module.exports = API_ERRORS;

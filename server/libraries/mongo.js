@@ -1,4 +1,4 @@
-const { MongoClient } = require( 'mongodb' );
+const { MongoClient, ObjectID } = require( 'mongodb' );
 let instance = null;
 
 class Database {
@@ -38,6 +38,10 @@ class Database {
 
     getClient() {
         return this.client;
+    }
+
+    createNewId() {
+        return ( new ObjectID() ).toHexString();
     }
 }
 

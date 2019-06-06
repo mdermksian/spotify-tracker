@@ -5,8 +5,7 @@ const morgan = require( 'morgan' );
 const cors = require( 'cors' );
 
 const Database = require( './libraries/mongo' );
-const Spotify = require( './libraries/spotify' );
-const { SearchArtists, AddArtist, TestRunDiff } = require( './api/endpoints');
+const { SearchArtists, AddArtist, TestRunDiff, SignUp } = require( './api/endpoints');
 
 const app = express();
 const PORT = 3000;
@@ -19,9 +18,10 @@ app.use( cors() );
 app.use( morgan( `:method :url :status :res[content-length] - :response-time ms`) );
 
 //Endpoints
-app.post('/searchArtists', SearchArtists );
-app.post('/addArtist', AddArtist );
-app.post('/testRunDiff', TestRunDiff );
+app.post( '/searchArtists', SearchArtists );
+app.post( '/addArtist', AddArtist );
+app.post( '/testRunDiff', TestRunDiff );
+app.post( '/signUp', SignUp );
 
 //Server init
 ( async function init () {

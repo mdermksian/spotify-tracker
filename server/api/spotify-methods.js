@@ -37,11 +37,15 @@ const searchArtists = async ( search ) => {
     return { artists: processedArtists }
 }
 
-const addArtist = async ( artistId ) => {
+const addArtist = async ( artistId, userId ) => {
 
     const types = [
         {
             value: artistId,
+            type: 'string',
+        },
+        {
+            value: userId,
             type: 'string',
         }
     ];
@@ -49,67 +53,72 @@ const addArtist = async ( artistId ) => {
         return failure( API_ERRORS.ADD_ARTIST_ERRORS.BAD_INPUT );
     }
 
-    const artistResult = await Spotify.hitAPI( { location: `artists/${artistId}` } );
-    if ( artistResult.error ) {
-        console.error( "Spotify Error: ", artistResult.error );
-        return failure( API_ERRORS.ADD_ARTIST_ERRORS.SPOTIFY_ARTIST_FAILURE );
-    }
-    if( await Database.getDB().collection( 'artists' ).findOne({_id: artistResult.id}) ) {
-        return failure( API_ERRORS.ADD_ARTIST_ERRORS.ARTIST_ALREADY_ADDED );
-    }
-
-    let finishedGettingAlbums = false;
-    let location = `https://api.spotify.com/v1/artists/${artistResult.id}/albums?include_groups=album,single&limit=50&market=US`;
-    const albums = [];
-    while ( !finishedGettingAlbums ) {
-        const albumResult = await Spotify.hitAPI( { location, overrideLocation: true } );
-        if ( albumResult.error ) {
-            console.error( "Spotify Error: ", albumResult.error );
-            return failure( API_ERRORS.ADD_ARTIST_ERRORS.SPOTIFY_ALBUMS_FAILURE );
+    const artistInDB = await Database.getDB().collection( 'artists' ).findOne( { _id: artistId } );
+    if( !artistInDB ) {
+        const artistResult = await Spotify.hitAPI( { location: `artists/${artistId}` } );
+        if ( artistResult.error ) {
+            console.error( "Spotify Error: ", artistResult.error );
+            return failure( API_ERRORS.ADD_ARTIST_ERRORS.SPOTIFY_ARTIST_FAILURE );
         }
-        Array.prototype.push.apply( albums, albumResult.items );
-        if ( albumResult.next ) {
-            location = albumResult.next;
-        } else {
-            finishedGettingAlbums = true;
+
+        let finishedGettingAlbums = false;
+        let location = `https://api.spotify.com/v1/artists/${artistResult.id}/albums?include_groups=album,single&limit=50&market=US`;
+        const albums = [], albumDBWrites = [];
+        while ( !finishedGettingAlbums ) {
+            const albumResult = await Spotify.hitAPI( { location, overrideLocation: true } );
+            if ( albumResult.error ) {
+                console.error( "Spotify Error: ", albumResult.error );
+                return failure( API_ERRORS.ADD_ARTIST_ERRORS.SPOTIFY_ALBUMS_FAILURE );
+            }
+            Array.prototype.push.apply( albums, albumResult.items );
+            if ( albumResult.next ) {
+                location = albumResult.next;
+            } else {
+                finishedGettingAlbums = true;
+            }
+        }
+        
+        const albumIds = [];
+        for ( const album of albums ) {
+            albumIds.push( album.id );
+            albumDBWrites.push({
+                updateOne: {
+                    "filter": { _id: album.id },
+                    "update": { $set: {
+                        _id: album.id,
+                        artistId,
+                        name: album.name,
+                        type: album.album_type,
+                        image: album.images.length ? album.images[0].url : null,
+                        releaseDate: new Date( album.release_date )
+                    } },
+                    "upsert": true
+                }
+            })
+        }
+
+        artistToInsert = {
+            _id: artistResult.id,
+            name: artistResult.name,
+            image: artistResult.images.length ? artistResult.images[0].url : null,
+            albums: albumIds,
+        };
+
+        try {
+            await Database.getDB().collection( 'artists' ).insertOne( artistToInsert );
+            await Database.getDB().collection( 'albums' ).bulkWrite( albumDBWrites );
+        } catch ( error ) {
+            console.error( error );
+            return { error }
         }
     }
     
-    const albumDBWrites = [];
-    const albumIds = [];
-    for ( const album of albums ) {
-        albumIds.push( album.id );
-        albumDBWrites.push({
-            updateOne: {
-                "filter": { _id: album.id },
-                "update": { $set: {
-                    _id: album.id,
-                    artistId,
-                    name: album.name,
-                    type: album.album_type,
-                    image: album.images.length ? album.images[0].url : null,
-                    releaseDate: new Date( album.release_date )
-                } },
-                "upsert": true
-            }
-        })
-    }
-
-    const artistToInsert = {
-        _id: artistResult.id,
-        name: artistResult.name,
-        image: artistResult.images.length ? artistResult.images[0].url : null,
-        albums: albumIds,
-    };
-
-
     try {
-        await Database.getDB().collection( 'artists' ).insertOne( artistToInsert );
-        await Database.getDB().collection( 'albums' ).bulkWrite( albumDBWrites );
-        return {
-            artist: artistToInsert,
-            albums: albums
-        };
+        await Database.getDB().collection( 'users' ).updateOne(
+            { _id: userId },
+            { $addToSet: { favoriteArtists: artistId } }
+        )
+        return "Success"
     } catch ( error ) {
         console.error( error );
         return { error }

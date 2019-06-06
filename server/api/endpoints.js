@@ -3,7 +3,8 @@ const {
     addArtist,
 } = require( './spotify-methods' );
 const {
-    signUp
+    signUp,
+    getSummaryForPeriod,
 } = require( './user-methods' );
 
 const ComputeAlbumDiffs = require( '../libraries/diffs' );
@@ -37,9 +38,16 @@ const SignUp = async ( req, res ) => {
     } )
 }
 
+const GetSummaryForPeriod = async ( req, res ) => {
+    const { userId, sinceDate } = req.body;
+    const result = await getSummaryForPeriod( userId, sinceDate );
+    res.json( result );
+}
+
 module.exports = {
     SearchArtists,
     AddArtist,
     TestRunDiff,
-    SignUp
+    SignUp,
+    GetSummaryForPeriod
 }

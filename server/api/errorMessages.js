@@ -44,7 +44,16 @@ const API_ERRORS = {
             errorMessage: "Sorry, the user could not be created",
             errorCode: 1022,
         },
-
+    },
+    SUMMARY_ERRORS: {
+        BAD_INPUT: {
+            errorMessage: "Bad Input",
+            errorCode: 1030,
+        },
+        USER_NOT_FOUND: {
+            errorMessage: "User not found",
+            errorCode: 1031,
+        }
     }
 }
 

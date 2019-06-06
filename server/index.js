@@ -5,7 +5,7 @@ const morgan = require( 'morgan' );
 const cors = require( 'cors' );
 
 const Database = require( './libraries/mongo' );
-const { SearchArtists, AddArtist, TestRunDiff, SignUp } = require( './api/endpoints');
+const { SearchArtists, AddArtist, TestRunDiff, SignUp, GetSummaryForPeriod } = require( './api/endpoints');
 
 const app = express();
 const PORT = 3000;
@@ -22,6 +22,7 @@ app.post( '/searchArtists', SearchArtists );
 app.post( '/addArtist', AddArtist );
 app.post( '/testRunDiff', TestRunDiff );
 app.post( '/signUp', SignUp );
+app.get( '/getSummaryForPeriod', GetSummaryForPeriod );
 
 //Server init
 ( async function init () {

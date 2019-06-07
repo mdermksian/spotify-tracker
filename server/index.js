@@ -3,6 +3,7 @@ const bodyParser = require( 'body-parser' );
 const helmet = require( 'helmet' );
 const morgan = require( 'morgan' );
 const cors = require( 'cors' );
+const schedule = require( 'node-schedule' );
 
 const Database = require( './libraries/mongo' );
 const { SearchArtists, AddArtist, TestRunDiff, SignUp, GetSummaryForPeriod } = require( './api/endpoints');

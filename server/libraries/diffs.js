@@ -2,6 +2,8 @@ const Database = require( './mongo.js' );
 const Spotify = require( './spotify' );
 
 const ComputeAlbumDiffs = async ( ) => {
+    const runAt = new Date();
+    const diffsCreated = [];
     const artistIdObjects = await Database.getDB().collection( 'artists' ).aggregate([ { $project: { _id: 1 } } ]).toArray();
 
     for ( const artistIdObject of artistIdObjects ) {
@@ -48,7 +50,6 @@ const ComputeAlbumDiffs = async ( ) => {
         }
 
         if ( albumDiff.length < 1 ) {
-            console.error( `No new albums found for artist ${artistId}`);
             continue;
         }
 
@@ -56,9 +57,11 @@ const ComputeAlbumDiffs = async ( ) => {
         session.startTransaction();
 
         try {
+            const diffId = Database.createNewId();
             await Database.getDB().collection( 'albums' ).bulkWrite( albumDBWrites, { session } );
             await Database.getDB().collection( 'album-diffs' ).insertOne(
                 {
+                    _id: diffId,
                     createdAt: new Date(),
                     artistId,
                     albums: albumDiff,
@@ -70,8 +73,8 @@ const ComputeAlbumDiffs = async ( ) => {
                 { $set: { albums: newRecordOfAlbums } },
                 { session }
             )
-
             await session.commitTransaction();
+            diffsCreated.push( diffId );
             session.endSession();
         } catch ( error ) {
             console.error(error);
@@ -79,6 +82,16 @@ const ComputeAlbumDiffs = async ( ) => {
             session.endSession();
         }
         
+    }
+
+    try {
+        await Database.getDB().collection( 'diff-records' ).insertOne({
+            runAt,
+            finishedAt: new Date(),
+            diffsCreated,
+        })
+    } catch ( error ) {
+        console.error( error );
     }
 
 }

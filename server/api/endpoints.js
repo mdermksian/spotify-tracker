@@ -6,8 +6,8 @@ const {
     signUp,
     getSummaryForPeriod,
 } = require( './user-methods' );
-
 const ComputeAlbumDiffs = require( '../libraries/diffs' );
+const sendMail = require( '../libraries/mailer' );
 
 const SearchArtists = async ( req, res ) => {
     const { search } = req.query;
@@ -44,10 +44,16 @@ const GetSummaryForPeriod = async ( req, res ) => {
     res.json( result );
 }
 
+const SendTestMail = async ( req, res ) => {
+    await sendMail();
+    res.json( "Success" );
+}
+
 module.exports = {
     SearchArtists,
     AddArtist,
     TestRunDiff,
     SignUp,
-    GetSummaryForPeriod
+    GetSummaryForPeriod,
+    SendTestMail
 }

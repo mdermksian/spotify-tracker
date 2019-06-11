@@ -3,10 +3,9 @@ const bodyParser = require( 'body-parser' );
 const helmet = require( 'helmet' );
 const morgan = require( 'morgan' );
 const cors = require( 'cors' );
-const schedule = require( 'node-schedule' );
 
 const Database = require( './libraries/mongo' );
-const { SearchArtists, AddArtist, TestRunDiff, SignUp, GetSummaryForPeriod } = require( './api/endpoints');
+const { SearchArtists, AddArtist, TestRunDiff, SignUp, GetSummaryForPeriod, SendTestMail } = require( './api/endpoints');
 
 const app = express();
 const PORT = 3000;
@@ -24,6 +23,7 @@ app.post( '/addArtist', AddArtist );
 app.post( '/testRunDiff', TestRunDiff );
 app.post( '/signUp', SignUp );
 app.get( '/getSummaryForPeriod', GetSummaryForPeriod );
+app.post( '/sendTestMail', SendTestMail );
 
 //Server init
 ( async function init () {

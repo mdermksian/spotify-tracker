@@ -21,12 +21,12 @@ class Spotify {
         if ( this.AUTH_TOKEN && this.EXPIRES_AT && this.EXPIRES_AT > Date.now() ) return;
         if ( !this.CLIENT_ID || !this.SECRET_KEY ) return;
         try {
-            const Base65_ClientID_SecretKey = Buffer.from(`${this.CLIENT_ID}:${this.SECRET_KEY}`).toString( 'base64' );
+            const Base64_ClientID_SecretKey = Buffer.from(`${this.CLIENT_ID}:${this.SECRET_KEY}`).toString( 'base64' );
             const res = await fetch( 'https://accounts.spotify.com/api/token', {
                 method: 'POST',
                 headers: {
                     'Content-Type' : 'application/x-www-form-urlencoded',
-                    'Authorization': `Basic ${Base65_ClientID_SecretKey}`
+                    'Authorization': `Basic ${Base64_ClientID_SecretKey}`
                 },
                 body: "grant_type=client_credentials"
             } );
@@ -55,7 +55,10 @@ class Spotify {
         } catch ( error ) {
             console.log(error);
         }
+    }
 
+    async safelyHitAPI( requestObject ) {
+        this.hitAPI( {})
     }
 }
 

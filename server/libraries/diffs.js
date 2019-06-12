@@ -53,7 +53,7 @@ const ComputeAlbumDiffs = async ( ) => {
             continue;
         }
 
-        const session = await Database.getClient().startSession();
+        const session = Database.getClient().startSession();
         session.startTransaction();
 
         try {
@@ -81,7 +81,6 @@ const ComputeAlbumDiffs = async ( ) => {
             await session.abortTransaction();
             session.endSession();
         }
-        
     }
 
     try {

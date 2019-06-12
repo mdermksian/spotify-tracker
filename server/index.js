@@ -3,9 +3,12 @@ const bodyParser = require( 'body-parser' );
 const helmet = require( 'helmet' );
 const morgan = require( 'morgan' );
 const cors = require( 'cors' );
+const schedule = require( 'node-schedule' );
 
 const Database = require( './libraries/mongo' );
 const { SearchArtists, AddArtist, TestRunDiff, SignUp, GetSummaryForPeriod, SendTestMail } = require( './api/endpoints');
+const ComputeAlbumDiffs = require( './libraries/diffs' );
+const sendMail = require( './libraries/mailer' );
 
 const app = express();
 const PORT = 3000;
@@ -38,5 +41,7 @@ app.post( '/sendTestMail', SendTestMail );
 app.on( 'ready', function() {
     app.listen( process.env.PORT || PORT, () => {
         console.log( "Main server started on port " + (process.env.PORT || PORT) );
+        schedule.scheduleJob( '0 1,13 * * *', ComputeAlbumDiffs );
+        schedule.scheduleJob( '0 9 * * *', sendMail );
     } );
 } );

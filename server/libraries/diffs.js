@@ -8,23 +8,25 @@ const ComputeAlbumDiffs = async ( ) => {
 
     for ( const artistIdObject of artistIdObjects ) {
         const artistId = artistIdObject._id;
+        console.log( 'Running for artistId ', artistId );
         const artist = await Database.getDB().collection( 'artists' ).findOne( {_id: artistId }, { albums: 1 } );
         const currentRecordOfAlbums = artist.albums;
-
         let spotifyLocation = `https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=album,single&limit=50&market=US`;
         let finishedGettingAlbums = false;
         const spotifyRecordOfAlbums = [];
         while ( !finishedGettingAlbums ) {
-            const albumResult = await Spotify.hitAPI({ location: spotifyLocation, overrideLocation: true });
+            const albumResult = await Spotify.safelyRequestAPI({ location: spotifyLocation, overrideLocation: true });
             if( albumResult.error ) console.error(albumResult.error);
             Array.prototype.push.apply( spotifyRecordOfAlbums, albumResult.items );
             if ( albumResult.next ) {
-                location = albumResult.next;
+                spotifyLocation = albumResult.next;
             } else {
                 finishedGettingAlbums = true;
             }
         }
-        if( spotifyRecordOfAlbums.length < 1 ) continue;
+
+        console.log( spotifyRecordOfAlbums.length, currentRecordOfAlbums.length );
+        if( spotifyRecordOfAlbums.length === currentRecordOfAlbums.length ) continue;
 
         const albumDiff = [];
         const albumDBWrites = [];

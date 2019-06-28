@@ -16,7 +16,7 @@ const searchArtists = async ( search ) => {
         return failure( API_ERRORS.SEARCH_ERRORS.BAD_INPUT );
     }
 
-    const result = await Spotify.hitAPI( { location: `search?q=${search}&type=artist&limit=10` } );
+    const result = await Spotify.requestAPI( { location: `search?q=${search}&type=artist&limit=10` } );
 
     if ( result.error ) {
         console.error( "Spotify Error: ", result.error );
@@ -55,7 +55,7 @@ const addArtist = async ( artistId, userId ) => {
 
     const artistInDB = await Database.getDB().collection( 'artists' ).findOne( { _id: artistId } );
     if( !artistInDB ) {
-        const artistResult = await Spotify.hitAPI( { location: `artists/${artistId}` } );
+        const artistResult = await Spotify.requestAPI( { location: `artists/${artistId}` } );
         if ( artistResult.error ) {
             console.error( "Spotify Error: ", artistResult.error );
             return failure( API_ERRORS.ADD_ARTIST_ERRORS.SPOTIFY_ARTIST_FAILURE );
@@ -65,7 +65,7 @@ const addArtist = async ( artistId, userId ) => {
         let location = `https://api.spotify.com/v1/artists/${artistResult.id}/albums?include_groups=album,single&limit=50&market=US`;
         const albums = [], albumDBWrites = [];
         while ( !finishedGettingAlbums ) {
-            const albumResult = await Spotify.hitAPI( { location, overrideLocation: true } );
+            const albumResult = await Spotify.requestAPI( { location, overrideLocation: true } );
             if ( albumResult.error ) {
                 console.error( "Spotify Error: ", albumResult.error );
                 return failure( API_ERRORS.ADD_ARTIST_ERRORS.SPOTIFY_ALBUMS_FAILURE );

@@ -36,7 +36,6 @@ class Spotify {
                 if( !response || ( response && response.statusCode !== 200 ) ) {
                     resolve( { error: "Network error" } );
                 } else {
-                    console.log( "body", body );
                     resolve( JSON.parse( body ) );
                 }
             })
@@ -45,7 +44,6 @@ class Spotify {
         if( result.expires_in && result.access_token ) {
             this.EXPIRES_AT = Date.now() + result.expires_in * 1000;
             this.AUTH_TOKEN = result.access_token;
-            console.log(this.EXPIRES_AT, this.AUTH_TOKEN);
         }
         
     }

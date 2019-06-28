@@ -41,7 +41,7 @@ app.post( '/sendTestMail', SendTestMail );
 app.on( 'ready', function() {
     app.listen( process.env.PORT || PORT, () => {
         console.log( "Main server started on port " + (process.env.PORT || PORT) );
-        schedule.scheduleJob( '0 1,13 * * *', ComputeAlbumDiffs );
-        schedule.scheduleJob( '0 9 * * *', sendMail );
+        // schedule.scheduleJob( '0 1,13 * * *', ComputeAlbumDiffs );
+        // schedule.scheduleJob( '0 9 * * *', sendMail );
     } );
 } );

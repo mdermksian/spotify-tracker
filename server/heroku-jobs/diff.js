@@ -1,2 +1,7 @@
 const ComputeAlbumDiffs = require( '../libraries/diffs' );
-ComputeAlbumDiffs();
+const Database = require( '../libraries/mongo' );
+
+( async function job() {
+    await Database.connect();
+    ComputeAlbumDiffs();
+} )();

@@ -1,2 +1,7 @@
 const sendMail = require( '../libraries/mailer' );
-sendMail();
+const Database = require( '../libraries/mongo' );
+
+( async function test() {
+    await Database.connect();
+    sendMail();
+})();

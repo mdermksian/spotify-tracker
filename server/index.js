@@ -23,10 +23,10 @@ app.use( morgan( `:method :url :status :res[content-length] - :response-time ms`
 //Endpoints
 app.post( '/searchArtists', SearchArtists );
 app.post( '/addArtist', AddArtist );
-// app.post( '/testRunDiff', TestRunDiff );
+app.post( '/testRunDiff', TestRunDiff );
 app.post( '/signUp', SignUp );
 // app.get( '/getSummaryForPeriod', GetSummaryForPeriod );
-// app.post( '/sendTestMail', SendTestMail );
+app.post( '/sendTestMail', SendTestMail );
 
 //Server init
 ( async function init () {
